@@ -1,0 +1,249 @@
+{
+  "D:\\Users\\Weyne\\Desktop\\reto-tecnico\\serverless.yml": {
+    "versionFramework": "4.9.0",
+    "servicePath": "D:\\Users\\Weyne\\Desktop\\reto-tecnico\\serverless.yml",
+    "serviceConfigFileName": "serverless.yml",
+    "service": {
+      "service": "backend-nodejs-challenge",
+      "frameworkVersion": "^4",
+      "provider": {
+        "name": "aws",
+        "runtime": "nodejs20.x",
+        "region": "us-east-1",
+        "stage": "dev",
+        "environment": {
+          "CACHE_TABLE": "FusionadosCacheTable",
+          "HISTORIAL_TABLE": "HistorialTable",
+          "CUSTOM_TABLE": "CustomDataTable",
+          "WEATHER_API_KEY": "<REDACTED>"
+        },
+        "iamRoleStatements": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "dynamodb:GetItem",
+              "dynamodb:PutItem",
+              "dynamodb:Query",
+              "dynamodb:Scan",
+              "dynamodb:UpdateItem"
+            ],
+            "Resource": [
+              "arn:aws:dynamodb:us-east-1:932065123353:table/FusionadosCacheTable",
+              "arn:aws:dynamodb:us-east-1:932065123353:table/HistorialTable",
+              "arn:aws:dynamodb:us-east-1:932065123353:table/CustomDataTable"
+            ]
+          }
+        ],
+        "versionFunctions": true
+      },
+      "functions": {
+        "fusionados": {
+          "handler": "dist/handlers.fusionadosHandler",
+          "timeout": 10,
+          "memorySize": 512,
+          "events": [
+            {
+              "http": {
+                "path": "fusionados",
+                "method": "get",
+                "cors": true
+              }
+            }
+          ],
+          "name": "backend-nodejs-challenge-dev-fusionados"
+        },
+        "almacenar": {
+          "handler": "dist/handlers.almacenarHandler",
+          "timeout": 10,
+          "memorySize": 512,
+          "events": [
+            {
+              "http": {
+                "path": "almacenar",
+                "method": "post",
+                "cors": true
+              }
+            }
+          ],
+          "name": "backend-nodejs-challenge-dev-almacenar"
+        },
+        "historial": {
+          "handler": "dist/handlers.historialHandler",
+          "timeout": 10,
+          "memorySize": 512,
+          "events": [
+            {
+              "http": {
+                "path": "historial",
+                "method": "get",
+                "cors": true
+              }
+            }
+          ],
+          "name": "backend-nodejs-challenge-dev-historial"
+        }
+      },
+      "plugins": [
+        "serverless-offline"
+      ],
+      "resources": {
+        "Resources": {
+          "FusionadosCacheTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+              "TableName": "FusionadosCacheTable",
+              "AttributeDefinitions": [
+                {
+                  "AttributeName": "cacheKey",
+                  "AttributeType": "S"
+                }
+              ],
+              "KeySchema": [
+                {
+                  "AttributeName": "cacheKey",
+                  "KeyType": "HASH"
+                }
+              ],
+              "BillingMode": "PAY_PER_REQUEST",
+              "TimeToLiveSpecification": {
+                "AttributeName": "ttl",
+                "Enabled": true
+              }
+            }
+          },
+          "HistorialTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+              "TableName": "HistorialTable",
+              "AttributeDefinitions": [
+                {
+                  "AttributeName": "id",
+                  "AttributeType": "S"
+                },
+                {
+                  "AttributeName": "createdAt",
+                  "AttributeType": "S"
+                }
+              ],
+              "KeySchema": [
+                {
+                  "AttributeName": "id",
+                  "KeyType": "HASH"
+                },
+                {
+                  "AttributeName": "createdAt",
+                  "KeyType": "RANGE"
+                }
+              ],
+              "BillingMode": "PAY_PER_REQUEST"
+            }
+          },
+          "CustomDataTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+              "TableName": "CustomDataTable",
+              "AttributeDefinitions": [
+                {
+                  "AttributeName": "id",
+                  "AttributeType": "S"
+                }
+              ],
+              "KeySchema": [
+                {
+                  "AttributeName": "id",
+                  "KeyType": "HASH"
+                }
+              ],
+              "BillingMode": "PAY_PER_REQUEST"
+            }
+          }
+        }
+      }
+    },
+    "provider": {
+      "name": "aws",
+      "runtime": "nodejs20.x",
+      "region": "us-east-1",
+      "stage": "dev",
+      "environment": {
+        "CACHE_TABLE": "FusionadosCacheTable",
+        "HISTORIAL_TABLE": "HistorialTable",
+        "CUSTOM_TABLE": "CustomDataTable",
+        "WEATHER_API_KEY": "<REDACTED>"
+      },
+      "iamRoleStatements": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "dynamodb:GetItem",
+            "dynamodb:PutItem",
+            "dynamodb:Query",
+            "dynamodb:Scan",
+            "dynamodb:UpdateItem"
+          ],
+          "Resource": [
+            "arn:aws:dynamodb:us-east-1:932065123353:table/FusionadosCacheTable",
+            "arn:aws:dynamodb:us-east-1:932065123353:table/HistorialTable",
+            "arn:aws:dynamodb:us-east-1:932065123353:table/CustomDataTable"
+          ]
+        }
+      ],
+      "versionFunctions": true
+    },
+    "dashboard": {
+      "isEnabledForService": false,
+      "requiredAuthentication": false,
+      "orgFeaturesInUse": null,
+      "orgObservabilityIntegrations": null,
+      "serviceAppId": null,
+      "serviceProvider": null,
+      "instanceParameters": null
+    },
+    "serviceRawFile": "service: backend-nodejs-challenge\r\nframeworkVersion: '^4'\r\n\r\nprovider:\r\n  name: aws\r\n  runtime: nodejs20.x\r\n  region: us-east-1\r\n  stage: dev\r\n  environment:\r\n    CACHE_TABLE: FusionadosCacheTable\r\n    HISTORIAL_TABLE: HistorialTable\r\n    CUSTOM_TABLE: CustomDataTable\r\n    WEATHER_API_KEY: ccc4df41ff568899b33cc0f28869f549\r\n  iamRoleStatements:\r\n    - Effect: \"Allow\"\r\n      Action:\r\n        - dynamodb:GetItem\r\n        - dynamodb:PutItem\r\n        - dynamodb:Query\r\n        - dynamodb:Scan\r\n        - dynamodb:UpdateItem\r\n      Resource:\r\n        - \"arn:aws:dynamodb:us-east-1:932065123353:table/FusionadosCacheTable\"\r\n        - \"arn:aws:dynamodb:us-east-1:932065123353:table/HistorialTable\"\r\n        - \"arn:aws:dynamodb:us-east-1:932065123353:table/CustomDataTable\"\r\n\r\nfunctions:\r\n  fusionados:\r\n    handler: dist/handlers.fusionadosHandler\r\n    timeout: 10\r\n    memorySize: 512\r\n    events:\r\n      - http:\r\n          path: fusionados\r\n          method: get\r\n          cors: true\r\n  almacenar:\r\n    handler: dist/handlers.almacenarHandler\r\n    timeout: 10\r\n    memorySize: 512\r\n    events:\r\n      - http:\r\n          path: almacenar\r\n          method: post\r\n          cors: true\r\n  historial:\r\n    handler: dist/handlers.historialHandler\r\n    timeout: 10\r\n    memorySize: 512\r\n    events:\r\n      - http:\r\n          path: historial\r\n          method: get\r\n          cors: true\r\n\r\nplugins:\r\n  - serverless-offline\r\n\r\nresources:\r\n  Resources:\r\n    FusionadosCacheTable:\r\n      Type: AWS::DynamoDB::Table\r\n      Properties:\r\n        TableName: FusionadosCacheTable\r\n        AttributeDefinitions:\r\n          - AttributeName: cacheKey\r\n            AttributeType: S\r\n        KeySchema:\r\n          - AttributeName: cacheKey\r\n            KeyType: HASH\r\n        BillingMode: PAY_PER_REQUEST\r\n        TimeToLiveSpecification:\r\n          AttributeName: ttl\r\n          Enabled: true\r\n\r\n    HistorialTable:\r\n      Type: AWS::DynamoDB::Table\r\n      Properties:\r\n        TableName: HistorialTable\r\n        AttributeDefinitions:\r\n          - AttributeName: id\r\n            AttributeType: S\r\n          - AttributeName: createdAt\r\n            AttributeType: S\r\n        KeySchema:\r\n          - AttributeName: id\r\n            KeyType: HASH\r\n          - AttributeName: createdAt\r\n            KeyType: RANGE\r\n        BillingMode: PAY_PER_REQUEST\r\n\r\n    CustomDataTable:\r\n      Type: AWS::DynamoDB::Table\r\n      Properties:\r\n        TableName: CustomDataTable\r\n        AttributeDefinitions:\r\n          - AttributeName: id\r\n            AttributeType: S\r\n        KeySchema:\r\n          - AttributeName: id\r\n            KeyType: HASH\r\n        BillingMode: PAY_PER_REQUEST",
+    "command": [
+      "remove"
+    ],
+    "options": {},
+    "orgId": "a3877f6b-45c7-4549-87a7-51661e9bfa02",
+    "orgName": "tech2025",
+    "userId": "8zg6vST5LQXlZWcyhB",
+    "userName": "tech2025",
+    "serviceProviderAwsAccountId": "932065123353",
+    "serviceProviderAwsCfStackName": "backend-nodejs-challenge-dev",
+    "serviceProviderAwsCfStackId": "arn:aws:cloudformation:us-east-1:932065123353:stack/backend-nodejs-challenge-dev/e993ca60-047f-11f0-a7d0-0e5a1a4659fd",
+    "serviceProviderAwsCfStackCreated": "2025-03-19T05:06:27.599Z",
+    "serviceProviderAwsCfStackUpdated": null,
+    "serviceProviderAwsCfStackStatus": "CREATE_COMPLETE",
+    "serviceProviderAwsCfStackOutputs": [
+      {
+        "OutputKey": "HistorialLambdaFunctionQualifiedArn",
+        "OutputValue": "arn:aws:lambda:us-east-1:932065123353:function:backend-nodejs-challenge-dev-historial:18",
+        "Description": "Current Lambda function version",
+        "ExportName": "sls-backend-nodejs-challenge-dev-HistorialLambdaFunctionQualifiedArn"
+      },
+      {
+        "OutputKey": "FusionadosLambdaFunctionQualifiedArn",
+        "OutputValue": "arn:aws:lambda:us-east-1:932065123353:function:backend-nodejs-challenge-dev-fusionados:18",
+        "Description": "Current Lambda function version",
+        "ExportName": "sls-backend-nodejs-challenge-dev-FusionadosLambdaFunctionQualifiedArn"
+      },
+      {
+        "OutputKey": "AlmacenarLambdaFunctionQualifiedArn",
+        "OutputValue": "arn:aws:lambda:us-east-1:932065123353:function:backend-nodejs-challenge-dev-almacenar:18",
+        "Description": "Current Lambda function version",
+        "ExportName": "sls-backend-nodejs-challenge-dev-AlmacenarLambdaFunctionQualifiedArn"
+      },
+      {
+        "OutputKey": "ServiceEndpoint",
+        "OutputValue": "https://sley65tb5e.execute-api.us-east-1.amazonaws.com/dev",
+        "Description": "URL of the service endpoint",
+        "ExportName": "sls-backend-nodejs-challenge-dev-ServiceEndpoint"
+      },
+      {
+        "OutputKey": "ServerlessDeploymentBucketName",
+        "OutputValue": "serverless-framework-deployments-us-east-1-8f011619-af30",
+        "ExportName": "sls-backend-nodejs-challenge-dev-ServerlessDeploymentBucketName"
+      }
+    ]
+  }
+}

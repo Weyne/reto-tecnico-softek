@@ -1,0 +1,102 @@
+service: backend-nodejs-challenge
+frameworkVersion: '^4'
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: us-east-1
+  stage: dev
+  environment:
+    CACHE_TABLE: FusionadosCacheTable
+    HISTORIAL_TABLE: HistorialTable
+    CUSTOM_TABLE: CustomDataTable
+    WEATHER_API_KEY: ccc4df41ff568899b33cc0f28869f549
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:UpdateItem
+      Resource:
+        - "arn:aws:dynamodb:us-east-1:932065123353:table/FusionadosCacheTable"
+        - "arn:aws:dynamodb:us-east-1:932065123353:table/HistorialTable"
+        - "arn:aws:dynamodb:us-east-1:932065123353:table/CustomDataTable"
+
+functions:
+  fusionados:
+    handler: dist/handlers.fusionadosHandler
+    timeout: 10
+    memorySize: 512
+    events:
+      - http:
+          path: fusionados
+          method: get
+          cors: true
+  almacenar:
+    handler: dist/handlers.almacenarHandler
+    timeout: 10
+    memorySize: 512
+    events:
+      - http:
+          path: almacenar
+          method: post
+          cors: true
+  historial:
+    handler: dist/handlers.historialHandler
+    timeout: 10
+    memorySize: 512
+    events:
+      - http:
+          path: historial
+          method: get
+          cors: true
+
+plugins:
+  - serverless-offline
+
+resources:
+  Resources:
+    FusionadosCacheTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: FusionadosCacheTable
+        AttributeDefinitions:
+          - AttributeName: cacheKey
+            AttributeType: S
+        KeySchema:
+          - AttributeName: cacheKey
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        TimeToLiveSpecification:
+          AttributeName: ttl
+          Enabled: true
+
+    HistorialTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: HistorialTable
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+          - AttributeName: createdAt
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+
+    CustomDataTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: CustomDataTable
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
