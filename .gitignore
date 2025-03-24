@@ -5,7 +5,6 @@
 *.log
 
 # Carpetas de compilación o distribución
-/dist
 /build
 
 # Variables de entorno
